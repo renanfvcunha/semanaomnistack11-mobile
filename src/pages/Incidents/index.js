@@ -12,8 +12,6 @@ import Feather from 'react-native-vector-icons/Feather';
 import logoImg from '../../assets/logo.png';
 import styles from './styles';
 
-// import { Container } from './styles';
-
 export default function Incidents() {
   const navigation = useNavigation();
 
