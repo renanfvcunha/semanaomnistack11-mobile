@@ -7,30 +7,44 @@ import {
   TouchableOpacity,
   Linking,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import Intl from 'intl';
+import 'intl/locale-data/jsonp/pt-BR';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import logoImg from '../../assets/logo.png';
 import styles from './styles';
 
 export default function Detail() {
-  const navigation = useNavigation();
+  const nav = useNavigation();
+  const route = useRoute();
+  const incident = route.params.incident;
+
+  const body = `Olá, ${incident.name}.
+
+Estou entrando em contato pois gostaria de ajudar no caso "${
+    incident.title
+  }" com o valor de ${Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(incident.value)}.`;
 
   function sendMail() {
-    Linking.openURL(
-      'mailto:ajude@apipa.com?subject=Cadelinha Atropelada&body=Gostaria de ajudar eça cadelãña que foi atropelada.',
-    );
+    const to = incident.email;
+    const subject = `Herói do Caso: ${incident.title}`;
+
+    Linking.openURL(`mailto:${to}?subject=${subject}&body=${body}`);
   }
 
   function sendWhatsApp() {
     Linking.openURL(
-      'whatsapp://send?phone=+5586988209861&text=Gostaria de ajudar eça cadelãña que foi atropelada.',
+      `whatsapp://send?phone=+55${incident.whatsapp}&text=${body}`,
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => nav.goBack()}>
           <Feather name="arrow-left" size={28} color="#e02041" />
         </TouchableOpacity>
         <Image source={logoImg} />
@@ -40,18 +54,25 @@ export default function Detail() {
         <Text style={[styles.incidentProperty, styles.incidentProperty1st]}>
           ONG:
         </Text>
-        <Text style={styles.incidentValue}>APIPA</Text>
+        <Text style={styles.incidentValue}>
+          {incident.name} de {incident.city} / {incident.uf}
+        </Text>
 
         <Text style={styles.incidentProperty}>CASO:</Text>
-        <Text style={styles.incidentValue}>Cachorro atropelado</Text>
+        <Text style={styles.incidentValue}>{incident.title}</Text>
 
         <Text style={styles.incidentProperty}>VALOR:</Text>
-        <Text style={styles.incidentValue}>R$ 120,00</Text>
+        <Text style={styles.incidentValue}>
+          {Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+          }).format(incident.value)}
+        </Text>
       </View>
 
       <View style={styles.contactBox}>
         <Text style={styles.heroTitle}>Salve o dia!</Text>
-        <Text style={styles.heroTitle}>Seja o herói dese caso.</Text>
+        <Text style={styles.heroTitle}>Seja o herói desse caso.</Text>
 
         <Text style={styles.heroDescription}>Entre em Contato.</Text>
 
